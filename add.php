@@ -36,8 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         throw new Exception('you did not set task fields in action_update');
     }
 
-
-
     $product_name = htmlspecialchars($product_name, ENT_QUOTES);;
     $product_img = htmlspecialchars($product_img, ENT_QUOTES);
     $product_img_ref = htmlspecialchars($product_img_ref, ENT_QUOTES);

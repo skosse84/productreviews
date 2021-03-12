@@ -2,3 +2,11 @@ body{
     background-color: #dde5ee;
     padding: 15px;
 }
+
+th.sorted[data-order="-1"]::after {
+    content: " ▼"
+}
+
+th.sorted[data-order="1"]::after {
+    content: " ▲"
+}
