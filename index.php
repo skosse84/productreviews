@@ -11,6 +11,9 @@
     <title>Главная</title>
 </head>
 <body>
+<div class="text-right">
+<a href="add.php" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Добавить товар</a>
+</div>
 <h1 class="text-center">Товары:</h1>
 <?php
 
@@ -26,7 +29,7 @@ mysqli_set_charset($link, 'utf8');
 $query = "SELECT * FROM product;";
 $result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link));
 if ($result) {
-    $rows = mysqli_num_rows($result); // количество полученных строк
+    $rows = mysqli_num_rows($result);
 
     for ($i = 0; $i < $rows; ++$i) {
         $row = mysqli_fetch_row($result);
@@ -62,7 +65,7 @@ for ($i = 0; $i < count($data); $i++) {
     echo <<<EOD
         <tr>
             <th scope="row" class="table-success">{$nomstr}</th>
-            <td class="table-light">{$data[$i]["title"]}</td>
+            <td class="table-light"><a href="reviews.php?prod={$data[$i]["title"]}">{$data[$i]["title"]}</a></td>
             <td class="table-light">{$data[$i]["price"]}</td>
             <td class="table-light">{$data[$i]["img"]}</td>
             <td class="table-light">{$data[$i]["description"]}</td>

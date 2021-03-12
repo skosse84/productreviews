@@ -12,9 +12,6 @@
 </head>
 <?php
 if ($_SERVER['REQUEST_METHOD'] == 'POST'):
-    echo "<pre>";
-    var_dump($_POST);
-    echo "</pre>";
 
     $user = "root";
     $pass = "admin";
@@ -59,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     mysqli_close($link);
 
     ?>
-    <h1 class="text-center mb-4">Данные добавлены</h1>
+    <h1 class="text-center mb-4">Товар добавлен!</h1>
     <form method="get" action="add.php">
         <button type="submit" class="btn btn-success  w-100">
             OK
