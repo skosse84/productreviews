@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     $query = "INSERT INTO `product` (`title`,`img_name`,`price`,`description`,`author`)  VALUES (?, ?, ?, ?, ?);";
 
     $stmt = mysqli_prepare($link, $query);
-    mysqli_stmt_bind_param($stmt, 'ssiss', $product_name, $img_name, $product_price, $author_name, $product_descr);
+    mysqli_stmt_bind_param($stmt, 'ssiss', $product_name, $img_name, $product_price, $product_descr, $author_name);
     mysqli_stmt_execute($stmt) or die("Ошибка " . mysqli_error($link));
     mysqli_stmt_close($stmt);
 
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         </div>
         <div class="form-group col-md-4">
             <label for="product_date">Дата добавления товара:</label>
-            <input type="date" class="form-control" id="product_date" name="product_date"
+            <input type="date" class="form-control" id="product_date" name="product_date" tabindex="-1"
                    value="<?php echo date('Y-m-d'); ?>" required readonly>
         </div>
     </div>
