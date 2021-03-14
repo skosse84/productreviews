@@ -45,13 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     $author_name = htmlspecialchars($author_name, ENT_QUOTES);
     $product_descr = htmlspecialchars($product_descr, ENT_QUOTES);
 
-    function create_product_image($filename, $file_chaged_name, $width, $height){
+    function create_product_image($filename, $file_chaged_name, $width, $height)
+    {
         [$widthOrig, $heightOrig] = getimagesize($filename);
-        echo "<pre>";
-        echo "<br>widthOrig and heightOrig:<br>";
-        var_dump($widthOrig);
-        var_dump($heightOrig);
-        echo "</pre>";
         $ext = end(explode('.', $filename));
         $image_p = imagecreatetruecolor($width, $height);
         $image = null;
@@ -75,34 +71,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
                 imagegif($image_p, $file_chaged_name);
                 break;
         }
-        if($image){
+        if ($image) {
             imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $widthOrig, $heightOrig);
-         }else{
+        } else {
             return false;
         }
         return true;
     }
 
-    function get_image_name($product_name, $file_name){
+    function get_image_name($product_name, $file_name)
+    {
         $ext = end(explode('.', $file_name));
         return $product_name . "." . $ext;
     }
 
-    if (isset($_FILES["product_img"])) {
+    if (isset($_FILES["product_img"]) AND !empty($_FILES["product_img"]["name"])) {
         $img_name = get_image_name($product_name, $_FILES['product_img']['name']);
         $temp_file_name = __DIR__ . '\\temp\\' . $img_name;
         $file_orig_name = __DIR__ . '\\img\\orig\\' . $img_name;
         $file_small_name = __DIR__ . '\\img\\small\\' . $img_name;
 
         if (move_uploaded_file($_FILES['product_img']['tmp_name'], $temp_file_name)) {
-            create_product_image($temp_file_name, $file_orig_name, 200,150);
-            create_product_image($temp_file_name, $file_small_name, 50,40);
+            create_product_image($temp_file_name, $file_orig_name, 200, 150);
+            create_product_image($temp_file_name, $file_small_name, 50, 40);
+        } else {
+            $img_name = 'nothing.jpg';
+        }
+    } elseif (isset($_POST["product_img_ref"])) {
+        $url = $_POST["product_img_ref"];
+        $img_name = get_image_name($product_name, $url);
+        $temp_file_name = __DIR__ . '\\temp\\' . $img_name;
+        $file_orig_name = __DIR__ . '\\img\\orig\\' . $img_name;
+        $file_small_name = __DIR__ . '\\img\\small\\' . $img_name;
+        if (file_put_contents($temp_file_name, file_get_contents($url))) {
+            create_product_image($temp_file_name, $file_orig_name, 200, 150);
+            create_product_image($temp_file_name, $file_small_name, 50, 40);
         } else {
             $img_name = 'nothing.jpg';
         }
     }
 
-    //$img_name = $product_img ?? $product_img_ref;
     $img_name = $img_name ?? 'nothing.jpg';
 
     $link = mysqli_connect($host, $user, $pass, $db) or die("Error " . mysqli_error($link));
