@@ -18,7 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     $host = "localhost";
     $db = "agregator";
 
-    if (isset($_POST["product_name"]) AND  isset($_POST["author_name"])) {
+    echo "<pre>";
+    var_dump($_POST);
+    var_dump($_FILES);
+    echo "</pre>";
+
+    if (isset($_POST["product_name"]) AND isset($_POST["author_name"])) {
         if (!empty($_POST["product_name"]) AND !empty($_POST["author_name"])) {
             $product_name = $_POST["product_name"];
             $product_img = $_POST["product_img"] ?? '';
@@ -40,8 +45,65 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     $author_name = htmlspecialchars($author_name, ENT_QUOTES);
     $product_descr = htmlspecialchars($product_descr, ENT_QUOTES);
 
-    $img_name = $product_img ?? $product_img_ref;
-    $img_name = 'nothing.jpg';
+    function create_product_image($filename, $file_chaged_name, $width, $height){
+        [$widthOrig, $heightOrig] = getimagesize($filename);
+        echo "<pre>";
+        echo "<br>widthOrig and heightOrig:<br>";
+        var_dump($widthOrig);
+        var_dump($heightOrig);
+        echo "</pre>";
+        $ext = end(explode('.', $filename));
+        $image_p = imagecreatetruecolor($width, $height);
+        $image = null;
+        switch ($ext) {
+            case 'jpg':
+            case 'jpeg':
+            case 'jfif':
+            case 'jpe':
+                $image = imagecreatefromjpeg($filename);
+                imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $widthOrig, $heightOrig);
+                imagejpeg($image_p, $file_chaged_name);
+                break;
+            case 'png':
+                $image = imagecreatefrompng($filename);
+                imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $widthOrig, $heightOrig);
+                imagepng($image_p, $file_chaged_name);
+                break;
+            case 'gif':
+                $image = imagecreatefromgif($filename);
+                imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $widthOrig, $heightOrig);
+                imagegif($image_p, $file_chaged_name);
+                break;
+        }
+        if($image){
+            imagecopyresampled($image_p, $image, 0, 0, 0, 0, $width, $height, $widthOrig, $heightOrig);
+         }else{
+            return false;
+        }
+        return true;
+    }
+
+    function get_image_name($product_name, $file_name){
+        $ext = end(explode('.', $file_name));
+        return $product_name . "." . $ext;
+    }
+
+    if (isset($_FILES["product_img"])) {
+        $img_name = get_image_name($product_name, $_FILES['product_img']['name']);
+        $temp_file_name = __DIR__ . '\\temp\\' . $img_name;
+        $file_orig_name = __DIR__ . '\\img\\orig\\' . $img_name;
+        $file_small_name = __DIR__ . '\\img\\small\\' . $img_name;
+
+        if (move_uploaded_file($_FILES['product_img']['tmp_name'], $temp_file_name)) {
+            create_product_image($temp_file_name, $file_orig_name, 200,150);
+            create_product_image($temp_file_name, $file_small_name, 50,40);
+        } else {
+            $img_name = 'nothing.jpg';
+        }
+    }
+
+    //$img_name = $product_img ?? $product_img_ref;
+    $img_name = $img_name ?? 'nothing.jpg';
 
     $link = mysqli_connect($host, $user, $pass, $db) or die("Error " . mysqli_error($link));
 
@@ -64,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
     </form>
 <?php else: ?>
 <h1 class="display-5 mb-3">Добавить товар:</h1>
-<form method="post" action='add.php'>
+<form enctype="multipart/form-data" method="post" action='add.php'>
     <div class="form-group">
         <label for="product_name">Название товара:</label>
         <input type="text" class="form-control" id="product_name" name="product_name" required>
