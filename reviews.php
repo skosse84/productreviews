@@ -13,10 +13,12 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] == 'POST'):
 
-    $user = "root";
-    $pass = "admin";
-    $host = "localhost";
-    $db = "agregator";
+    $config = parse_ini_file("config.ini", true);
+
+    $user = $config["db_section"]["user"];
+    $pass = $config["db_section"]["pass"];
+    $host = $config["db_section"]["host"];
+    $db = $config["db_section"]["db"];
 
     if (isset($_POST["author"]) AND isset($_POST["review"])) {
         if (!empty($_POST["author"]) AND !empty($_POST["review"])) {

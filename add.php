@@ -13,15 +13,12 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] == 'POST'):
 
-    $user = "root";
-    $pass = "admin";
-    $host = "localhost";
-    $db = "agregator";
+    $config = parse_ini_file("config.ini", true);
 
-    echo "<pre>";
-    var_dump($_POST);
-    var_dump($_FILES);
-    echo "</pre>";
+    $user = $config["db_section"]["user"];
+    $pass = $config["db_section"]["pass"];
+    $host = $config["db_section"]["host"];
+    $db = $config["db_section"]["db"];
 
     if (isset($_POST["product_name"]) AND isset($_POST["author_name"])) {
         if (!empty($_POST["product_name"]) AND !empty($_POST["author_name"])) {
@@ -97,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST'):
         } else {
             $img_name = 'nothing.jpg';
         }
-    } elseif (isset($_POST["product_img_ref"])) {
+    } elseif (isset($_POST["product_img_ref"]) AND !empty($_POST["product_img_ref"])) {
         $url = $_POST["product_img_ref"];
         $img_name = get_image_name($product_name, $url);
         $temp_file_name = __DIR__ . '\\temp\\' . $img_name;
